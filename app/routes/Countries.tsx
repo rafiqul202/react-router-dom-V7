@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/Countries";
 
-
 export async function clientLoader() {
   const res = await fetch("https://restcountries.com/v3.1/all");
   const data = await res.json();
@@ -13,6 +12,10 @@ export default function Countries({ loaderData }: Route.ComponentProps) {
   const [search, setSearch] = useState<string>("");
   const [region, setRegion] = useState<string>("");
 
+  // uniq country region filtering and duplicated region removes 
+  const uniqueCategories = Array.from(
+    new Set(loaderData.map((country: any) => country.region))
+  );
   const filteredCountries = loaderData.filter((country: any) => {
     const matchesRegion =
       !region || country.region.toLowerCase() === region.toLowerCase();
@@ -39,11 +42,15 @@ export default function Countries({ loaderData }: Route.ComponentProps) {
           className="border border-gray-300 rounded px-3 py-2 w-full sm:w-1/2 focus:outline-none focus:border-indigo-500"
         >
           <option value="">All Regions</option>
-          <option value="africa">Africa</option>
-          <option value="americas">Americas</option>
+          {uniqueCategories.map((region, index: number) => (
+            <option value={region} key={index}>
+              {region}
+            </option>
+          ))}
+          {/* <option value="americas">Americas</option>
           <option value="asia">Asia</option>
           <option value="europe">Europe</option>
-          <option value="oceania">Oceania</option>
+          <option value="oceania">Oceania</option> */}
         </select>
       </div>
 
